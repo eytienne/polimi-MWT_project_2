@@ -1,0 +1,136 @@
+[
+    {
+        "id": "24e0482f1e78eedf",
+        "type": "tab",
+        "label": "Actuator control-loop",
+        "disabled": false,
+        "info": "",
+        "env": [
+            {
+                "name": "ROOM_ID",
+                "value": "1",
+                "type": "num"
+            },
+            {
+                "name": "ORCHESTRATROR_HOST",
+                "value": "0.0.0.0",
+                "type": "str"
+            },
+            {
+                "name": "ORCHESTRATROR_PORT",
+                "value": "21883",
+                "type": "str"
+            }
+        ]
+    },
+    {
+        "id": "a011b2ec9da3757f",
+        "type": "mqtt in",
+        "z": "24e0482f1e78eedf",
+        "name": "",
+        "topic": "room/${ROOM_ID}/sensor/+/measure",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ebd16bd11c4c0e21",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 420,
+        "wires": [
+            [
+                "de21c8e3f57a648d"
+            ]
+        ]
+    },
+    {
+        "id": "3d5d810b09e90f10",
+        "type": "function",
+        "z": "24e0482f1e78eedf",
+        "name": "Process humidity and temperature",
+        "func": "/** @type {{ humidity: number, temperature: number }[]} */\nconst batch = msg.payload;\nconst humidities = batch.map(cur => cur.humidity).filter(e => e != null);\nconst temperatures = batch.map(cur => cur.temperature).filter(e => e != null);\n\nif (temperatures.length > 0) {\n    const temperature = temperatures.sum() / temperatures.length;\n    context.hvac.heating = temperature <= global.temperature_min ? global.temperature_min - temperature : 0;\n    context.hvac.cooling = temperature >= global.temperature_max ? temperature - global.temperature_max : 0;\n}\nif(humidities.length > 0) {\n    const humidity = humidities.sum() / humidities.length;\n    context.hvac.ventilation = humidity >= global.humidity_max;\n}\n\nmsg.payload = context.hvac;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "context.hvac = {\n    heating: 0,\n    ventilation: 0,\n    cooling: 0,\n};\nglobal.ranges ??= {\n    humidity_max: 0.5,\n    temperature_min: 19,\n    temperature_max: 25,\n}\nArray.prototype.sum = function() {\n    return this.reduce((acc, cur) => acc + cur, 0);\n}",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 420,
+        "wires": [
+            [
+                "6889aa78dbcb54fe"
+            ]
+        ]
+    },
+    {
+        "id": "6889aa78dbcb54fe",
+        "type": "mqtt out",
+        "z": "24e0482f1e78eedf",
+        "name": "",
+        "topic": "room/${ROOM_ID}/hvac",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ebd16bd11c4c0e21",
+        "x": 1110,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "de21c8e3f57a648d",
+        "type": "delay",
+        "z": "24e0482f1e78eedf",
+        "name": "",
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "5",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "3d5d810b09e90f10"
+            ]
+        ]
+    },
+    {
+        "id": "ebd16bd11c4c0e21",
+        "type": "mqtt-broker",
+        "name": "Building broker",
+        "broker": "${ORCHESTRATROR_IP}",
+        "port": "${ORCHESTRATROR_PORT}",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

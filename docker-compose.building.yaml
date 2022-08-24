@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  building:
+    image: sban_building
+    volumes:
+      - ./building:/data
+    environment:
+      SBAN_AREA: $SBAN_AREA
+      SBAN_BUILDING: $SBAN_BUILDING
+    networks:
+      - backend-net
+
+  actuator:
+    image: sban_actuator
+    volumes:
+      - ./room/data:/data
+    ports:
+      - "1880"
+    deploy:
+      replicas: ${SBAN_ROOM_COUNT:-1}
+
+  contiki-ng:
+    image: room_contiki-ng
+    privileged: true
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: 0
+    ports:
+      - "1883"
+    volumes:
+      - type: bind
+        source: $CNG_PATH
+        target: /home/user/contiki-ng
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev/bus/usb:/dev/bus/usb
+    environment:
+      DISPLAY: $DISPLAY
+      SBAN_AREA: $SBAN_AREA
+      SBAN_BUILDING: $SBAN_BUILDING
+      ORCHESTRATROR_HOST: building
+
+networks:
+  backend-net:
+    name: backend-net
+    external: true

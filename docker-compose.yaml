@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  backend:
+    image: eclipse-mosquitto
+    networks:
+      - backend-net
+
+networks:
+  backend-net:
+    name: backend-net
+    external: true
