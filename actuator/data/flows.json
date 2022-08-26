@@ -24,6 +24,33 @@
         ]
     },
     {
+        "id": "ebd16bd11c4c0e21",
+        "type": "mqtt-broker",
+        "name": "Building broker",
+        "broker": "${SBAN_BUILDING_HOST}",
+        "port": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
         "id": "a011b2ec9da3757f",
         "type": "mqtt in",
         "z": "24e0482f1e78eedf",
@@ -107,30 +134,69 @@
         ]
     },
     {
-        "id": "ebd16bd11c4c0e21",
-        "type": "mqtt-broker",
-        "name": "Building broker",
-        "broker": "${ORCHESTRATROR_IP}",
-        "port": "${ORCHESTRATROR_PORT}",
-        "clientid": "",
-        "autoConnect": true,
-        "usetls": false,
-        "protocolVersion": "4",
-        "keepalive": "60",
-        "cleansession": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
+        "id": "ae56f555fb38db06",
+        "type": "inject",
+        "z": "24e0482f1e78eedf",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"humidity\":55,\"temperature\":22}",
+        "payloadType": "json",
+        "x": 570,
+        "y": 140,
+        "wires": [
+            [
+                "3d5d810b09e90f10"
+            ]
+        ]
+    },
+    {
+        "id": "9e80bd9838be8eb0",
+        "type": "mqtt in",
+        "z": "24e0482f1e78eedf",
+        "name": "",
+        "topic": "room/${ROOM_ID}/hvac",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ebd16bd11c4c0e21",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 870,
+        "y": 100,
+        "wires": [
+            [
+                "893b6fd18d8f1347"
+            ]
+        ]
+    },
+    {
+        "id": "893b6fd18d8f1347",
+        "type": "debug",
+        "z": "24e0482f1e78eedf",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 100,
+        "wires": []
     }
 ]

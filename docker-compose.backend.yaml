@@ -3,10 +3,11 @@ version: "3.3"
 services:
   backend:
     image: eclipse-mosquitto
+    hostname: mqtt.sban.org
     networks:
       - backend-net
 
 networks:
   backend-net:
-    name: backend-net
+    name: sban_backend-net
     external: true

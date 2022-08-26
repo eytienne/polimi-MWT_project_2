@@ -4,24 +4,36 @@ services:
   building:
     image: sban_building
     volumes:
-      - ./building:/data
+      - building_data:/data
     environment:
       SBAN_AREA: $SBAN_AREA
+      SBAN_BACKEND: mqtt.sban.org
+      SBAN_FAKE_LOCATION_CITY: $SBAN_FAKE_LOCATION_CITY
+      SBAN_FAKE_LOCATION_COUNTRY: $SBAN_FAKE_LOCATION_COUNTRY
       SBAN_BUILDING: $SBAN_BUILDING
+    ports:
+      - "21880:1880"
+      - "1883"
     networks:
       - backend-net
+      - building-net
 
   actuator:
     image: sban_actuator
     volumes:
-      - ./room/data:/data
+      - actuator_data:/data
     ports:
-      - "1880"
+      - "21881-22881:1880"
+    environment:
+      # ROOM_ID: "{{.Task.Slot}}"
+      SBAN_BUILDING_HOST: building
     deploy:
-      replicas: ${SBAN_ROOM_COUNT:-1}
+      replicas: ${SBAN_ROOM_COUNT}
+    networks:
+      - building-net
 
   contiki-ng:
-    image: room_contiki-ng
+    image: sban_contiki-ng
     privileged: true
     sysctls:
       net.ipv6.conf.all.disable_ipv6: 0
@@ -37,9 +49,18 @@ services:
       DISPLAY: $DISPLAY
       SBAN_AREA: $SBAN_AREA
       SBAN_BUILDING: $SBAN_BUILDING
-      ORCHESTRATROR_HOST: building
+      SBAN_BUILDING_HOST: building
+    networks:
+      - building-net
 
 networks:
   backend-net:
-    name: backend-net
+    name: sban_backend-net
     external: true
+  building-net:
+
+volumes:
+  actuator_data:
+    driver: local
+  building_data:
+    driver: local
