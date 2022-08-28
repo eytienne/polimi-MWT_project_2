@@ -9,8 +9,11 @@ Sensors publish measures via the building to their rooms actuators. Those measur
 The actuators will use the measures to set their associated HVAC properties. They will publish this setting back to the building broker for measurement simulation.
 
 ### Faked measures
-The measures will be faked on a sensor level taking as input 1) the outside measures of the location (OpenWeather), 2) the previous measures, 3) the HVAC settings and 4) a sensor bias (could reflect the positioning in the room).
-1) and 3) are published periodically by the building and actuator respectively. 2) is kept by the sensor (initially set to a fake average one) and 4) is configured once at start-up.
+
+1) and 3) are published periodically by the building and actuator respectively. 2) is kept by the sensor (initially set to a fake average one).
+The measures will be faked on a sensor level taking as input 1) the weather of the location (OpenWeather), 2) the previous measures and 3) the HVAC settings.
+
+Further parameters would be needed to fake measures differently with room and sensor like bulding materials informations, room orientation, sensor position in a room, etc.
 
 ## Commands
 ```
@@ -29,8 +32,14 @@ apk add mosquitto-clients
 mosquitto_sub -h building -t '#'
 mosquitto_pub -h building -t 'test/alpha' -m 'Hello world!'
 
-sudo mount --bind contiki-ng/sensor/ ~/workspace/contiki-ng/examples/room-sensor/
-sudo mount --bind contiki-ng/building.csc ~/workspace/contiki-ng/simulations/building.csc
+cd contiki-ng
 
+# Mounting distant contiki-ng workspace to local versioned files
+sudo mount --bind sensor/ ~/workspace/contiki-ng/examples/room-sensor/
+sudo mount --bind building.csc ~/workspace/contiki-ng/simulations/building.csc
+
+make fetch-include
+
+# (in contiki-ng/examples/rpl-border-router)
 make TARGET=cooja connect-router-cooja
 ```
