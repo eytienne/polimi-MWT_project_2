@@ -1,0 +1,12 @@
+FROM apache/spark:v3.3.0
+
+USER root
+
+ENV SPARK_HOME=/opt/spark
+
+RUN mkdir -p /opt/spark/tmp/spark-events /opt/spark/conf
+
+COPY log4j2.properties spark-defaults.conf /opt/spark/conf/
+COPY ./docker-entrypoint.sh ./
+
+ENTRYPOINT [ "/opt/spark/work-dir/docker-entrypoint.sh" ]

@@ -4,6 +4,40 @@ services:
   backend:
     image: eclipse-mosquitto
     hostname: mqtt.sban.org
+    ports:
+      - "21883:1883"
+    volumes:
+      - ./backend/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - backend-net
+
+  spark-master:
+    image: sban_spark
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - '24040:4040'
+      - '27077:7077'
+      - '28080:8080'
+      - '18080:18080'
+
+    volumes:
+      - ../workspace/middleware_spark_tutorial:/middleware_spark_tutorial
+    networks:
+      - backend-net
+
+  spark-worker:
+    image: sban_spark
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_PORT=7000
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    ports:
+      - "7000"
+    volumes:
+    - ../workspace/middleware_spark_tutorial:/middleware_spark_tutorial
     networks:
       - backend-net
 

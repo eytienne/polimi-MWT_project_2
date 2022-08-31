@@ -16,6 +16,7 @@ extern "C" {
 extern struct etimer et;
 }
 #include "./include/json.hpp"
+#include <deque>
 #include <iostream>
 #include <regex>
 #include <sstream>
@@ -47,14 +48,18 @@ struct mqtt_conf_s {
 	char client_id[CLIENT_ID_SIZE + 1];
 } mqtt_conf;
 
-static enum machine_state {
+enum machine_state {
 	STATE_INIT,
 	STATE_REGISTERED,
 	STATE_CONNECTING,
 	STATE_CONNECTED,
 	STATE_SENSING,
+	STATE_MQTT_DEQUEUING,
 	STATE_DISCONNECTED,
-} state;
+};
+
+static machine_state state;
+static machine_state previousState;
 
 static string attachTopic;
 static string roomId;
@@ -107,14 +112,39 @@ extern "C" void initialize() {
 	state = STATE_INIT;
 }
 
+static bool have_connectivity(void) {
+	return uip_ds6_get_global(ADDR_PREFERRED) != NULL &&
+		   uip_ds6_defrt_choose() != NULL;
+}
+
+#define mqtt_available(conn)                                                   \
+	((!(conn)->out_queue_full) && (conn)->out_buffer_sent)
+
 static void publish_led_on() { leds_on(PROJECT_CONF_STATUS_LED); }
 static void publish_led_off(void *d) { leds_off(PROJECT_CONF_STATUS_LED); }
 
-void subscribe(const string &topic) {
+enum mqtt_operation {
+	MQTT_SUBSCRIBE,
+	MQTT_UNSUBSCRIBE,
+	MQTT_PUBLISH,
+};
+
+struct mqtt_operands {
+	string topic;
+	string payloadIfAny;
+};
+
+// using a queue missing from contiki-ng
+static deque<pair<mqtt_operation, mqtt_operands>> mqtt_queue;
+// avoid dangling pointers passing `c_str` to the mqtt process
+static string currentTopic;
+static string currentPayloadIfAny;
+
+static void _subscribe(const string &topic) {
 	auto _topic = topic.c_str();
 	mqtt_status_t status =
-		mqtt_subscribe(&conn, NULL, (char *)_topic, MQTT_QOS_LEVEL_1);
-	auto format = "Subscribed to %s with status %d\n";
+		mqtt_subscribe(&conn, NULL, (char *)_topic, MQTT_QOS_LEVEL_0);
+	auto format = "Subscribing to '%s' with status %d\n";
 	if (status == MQTT_STATUS_OK) {
 		LOG_INFO(format, _topic, status);
 	} else {
@@ -122,15 +152,63 @@ void subscribe(const string &topic) {
 	}
 }
 
-void unsubscribe(const string &topic) {
+static void _unsubscribe(const string &topic) {
 	auto _topic = topic.c_str();
 	mqtt_status_t status = mqtt_unsubscribe(&conn, NULL, (char *)_topic);
-	auto format = "Unsubscribed from %s with status %d\n";
+	auto format = "Unsubscribing from '%s' with status %d\n";
 	if (status == MQTT_STATUS_OK) {
 		LOG_INFO(format, _topic, status);
 	} else {
 		LOG_ERR(format, _topic, status);
 	}
+}
+
+static void _publish(const string &topic, const string &payload) {
+	auto _topic = topic.c_str();
+	mqtt_status_t status =
+		mqtt_publish(&conn, NULL, (char *)_topic, (uint8_t *)_topic,
+					 payload.size(), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
+	auto format = "Publishing to '%s' with status %d\n";
+	if (status == MQTT_STATUS_OK) {
+		LOG_INFO(format, _topic, status);
+	} else {
+		LOG_ERR(format, _topic, status);
+	}
+}
+
+static void dequeuing() {
+	if (state != STATE_MQTT_DEQUEUING) {
+		previousState = state;
+		state = STATE_MQTT_DEQUEUING;
+	}
+	process_poll(&room_sensor_process);
+}
+
+static void subscribe(const string &topic) {
+	if (mqtt_queue.empty()) {
+		currentTopic = topic;
+		_subscribe(currentTopic);
+	}
+	mqtt_queue.push_back({MQTT_SUBSCRIBE, {topic, ""}});
+}
+
+static void unsubscribe(const string &topic) {
+	if (mqtt_queue.empty()) {
+		currentTopic = topic;
+		_unsubscribe(currentTopic);
+	}
+	mqtt_queue.push_back({MQTT_UNSUBSCRIBE, {topic, ""}});
+}
+
+static void publish(const string &topic, const string &payload) {
+	auto empty = mqtt_queue.empty();
+	if (empty) {
+		currentTopic = topic;
+		currentPayloadIfAny = payload;
+		_publish(currentTopic, currentPayloadIfAny);
+	}
+	// keep payload if not just published
+	mqtt_queue.push_back({MQTT_PUBLISH, {topic, empty ? "" : payload}});
 }
 
 #define _ASSERT_FORMAT(expr)                                                   \
@@ -144,15 +222,17 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 	case MQTT_EVENT_CONNECTED: {
 		LOG_INFO("MQTT connected to %s:%d!\n", mqtt_conf.broker_ip,
 				 mqtt_conf.broker_port);
+		subscribe(attachTopic);
+		subscribe("sensors/on");
 		state = STATE_CONNECTED;
+		process_poll(&room_sensor_process);
 		break;
 	}
 	case MQTT_EVENT_DISCONNECTED: {
 		LOG_INFO("MQTT disconnected: reason %u\n", *((mqtt_event_t *)data));
-
 		state = STATE_DISCONNECTED;
 		process_poll(&room_sensor_process);
-		break;
+		return;
 	}
 	case MQTT_EVENT_PUBLISH: {
 		struct mqtt_message *msg_ptr = (struct mqtt_message *)data;
@@ -166,7 +246,7 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 			std::smatch roomMatch;
 			if (std::regex_match(topic, roomMatch,
 								 regex("room/(\\d+)/sensor/(\\d+)/attach"))) {
-				roomId = roomMatch.str();
+				roomId = roomMatch[1].str();
 				LOG_INFO("Attached to room %s\n", roomId.c_str());
 			} else if (topic == "sensors/on") {
 				if (roomId.empty()) {
@@ -182,6 +262,8 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 				subscribe("room/" + roomId + "/hvac");
 				state = STATE_SENSING;
 				LOG_INFO("Sensor turned on\n");
+			} else {
+				LOG_WARN("(connected) Topic unhandled: %s\n", topic.c_str());
 			}
 			break;
 		}
@@ -212,6 +294,8 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 							   heating.is_number_integer() &&
 							   ventilation.is_number_integer());
 				hvacSetting = {cooling, heating, ventilation};
+			} else {
+				LOG_WARN("(sensing) Topic unhandled: %s\n", topic.c_str());
 			}
 		} break;
 		default:
@@ -223,15 +307,27 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 		break;
 	}
 	case MQTT_EVENT_SUBACK: {
-		LOG_INFO("Application is subscribed to topic successfully\n");
+		auto queued = mqtt_queue.front();
+		mqtt_queue.pop_front();
+		LOG_INFO("Subscribed to '%s' successfully\n",
+				 queued.second.topic.c_str());
+		dequeuing();
 		break;
 	}
 	case MQTT_EVENT_UNSUBACK: {
-		LOG_INFO("Application is unsubscribed to topic successfully\n");
+		auto queued = mqtt_queue.front();
+		mqtt_queue.pop_front();
+		LOG_INFO("Unsubscribed from '%s' successfully\n",
+				 queued.second.topic.c_str());
+		dequeuing();
 		break;
 	}
 	case MQTT_EVENT_PUBACK: {
-		LOG_INFO("Publishing complete\n");
+		auto queued = mqtt_queue.front();
+		mqtt_queue.pop_front();
+		LOG_INFO("Published from '%s' successfully\n",
+				 queued.second.topic.c_str());
+		dequeuing();
 		break;
 	}
 	default:
@@ -240,45 +336,57 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 	}
 }
 
+
 extern "C" void state_machine() {
 	switch (state) {
 	case STATE_INIT:
 		mqtt_register(&conn, &room_sensor_process, mqtt_conf.client_id,
 					  event_callback, MAX_TCP_SEGMENT_SIZE);
 
-		mqtt_set_username_password(&conn, mqtt_conf.username,
-								   mqtt_conf.password);
+		// mqtt_set_username_password(&conn, mqtt_conf.username,
+		// 						   mqtt_conf.password);
 
 		state = STATE_REGISTERED;
 		LOG_INFO("MQTT registered\n");
 	case STATE_REGISTERED:
-		if (uip_ds6_get_global(ADDR_PREFERRED) != NULL) {
-			LOG_INFO("Joined network!\n");
-
-			mqtt_status_t status =
-				mqtt_connect(&conn, mqtt_conf.broker_ip, mqtt_conf.broker_port,
-							 15 * CLOCK_SECOND, MQTT_CLEAN_SESSION_ON);
+		if (!have_connectivity()) {
+			publish_led_on();
+			ctimer_set(&ct, CLOCK_SECOND >> 3, publish_led_off, NULL);
+			LOG_WARN("No connectivity!\n");
+		} else {
+			mqtt_status_t status = mqtt_connect(
+				&conn, mqtt_conf.broker_ip, mqtt_conf.broker_port,
+				60 * CLOCK_SECOND, MQTT_CLEAN_SESSION_ON);
 
 			LOG_INFO("MQTT connecting with status %d\n", status);
 			state = STATE_CONNECTING;
-		} else {
-			publish_led_on();
-			ctimer_set(&ct, CLOCK_SECOND >> 3, publish_led_off, NULL);
 		}
-		etimer_set(&et, CLOCK_SECOND >> 2);
+
+		etimer_set(&et, CLOCK_SECOND);
 		return;
 	case STATE_CONNECTING:
+		if (mqtt_connected(&conn)) {
+			state = STATE_CONNECTED;
+			etimer_set(&et, 1);
+			return;
+		}
 		publish_led_on();
 		ctimer_set(&ct, CLOCK_SECOND >> 2, publish_led_off, NULL);
 		LOG_INFO("MQTT connecting...\n");
-		break;
+		etimer_set(&et, CLOCK_SECOND);
+		return;
 	case STATE_CONNECTED:
-		subscribe(attachTopic);
-		subscribe("sensors/on");
 		LOG_INFO("Waiting for attachment\n");
+		etimer_set(&et, 2*CLOCK_SECOND);
 		return;
 	case STATE_SENSING:
-		if (mqtt_ready(&conn) && conn.out_buffer_sent) {
+		if (!mqtt_connected(&conn)) {
+			LOG_ERR("Not connected for publishing\n");
+			break;
+		} else if (!mqtt_available(&conn)) {
+			LOG_ERR("Connection not available for publishing\n");
+			break;
+		} else {
 			string measureTopic = "room/" + roomId + "/sensor/" +
 								  to_string(sensorId) + "/measure";
 			auto mm = getFakeMeasure();
@@ -288,15 +396,40 @@ extern "C" void state_machine() {
 				{"temperature", mm.temperature},
 			};
 			auto stringPayload = jsonPayload.dump();
-			mqtt_publish(&conn, NULL, (char *)measureTopic.c_str(),
-						 (uint8_t *)stringPayload.c_str(), stringPayload.size(),
-						 MQTT_QOS_LEVEL_1, MQTT_RETAIN_OFF);
-		} else {
-			LOG_ERR("Connection not ready for publishing\n");
+			publish(measureTopic, stringPayload);
+			etimer_set(&et, 5 * CLOCK_SECOND);
+			return;
 		}
-		etimer_set(&et, 5 * CLOCK_SECOND);
+	case STATE_MQTT_DEQUEUING:
+		LOG_DBG("STATE_MQTT_DEQUEUING reached\n");
+		if (mqtt_queue.empty()) {
+			state = previousState;
+			break;
+		}
+		if (!mqtt_connected(&conn)) {
+			LOG_ERR("Not connected for dequeuing\n");
+			break;
+		} else if (!mqtt_available(&conn)) {
+			LOG_ERR("Connection not available for dequeuing\n");
+		} else {
+			auto queued = mqtt_queue.front();
+			currentTopic = queued.second.topic;
+			currentPayloadIfAny = queued.second.payloadIfAny;
+			switch (queued.first) {
+			case MQTT_SUBSCRIBE:
+				_subscribe(currentTopic);
+				break;
+			case MQTT_UNSUBSCRIBE:
+				_unsubscribe(currentTopic);
+				break;
+			case MQTT_PUBLISH:
+				_publish(currentTopic, currentPayloadIfAny);
+				break;
+			}
+		}
 		break;
 	case STATE_DISCONNECTED:
+		state = STATE_CONNECTING;
 		break;
 	}
 

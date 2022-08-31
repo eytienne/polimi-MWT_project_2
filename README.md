@@ -17,11 +17,11 @@ Further parameters would be needed to fake measures differently with room and se
 
 ## Commands
 ```
+docker network create sban_backend-net
+
 docker build actuator/ -t sban_actuator
 docker build building/ -t sban_building
 docker build contiki-ng/ -t sban_contiki-ng
-
-docker network create sban_backend-net
 
 # Select a stack
 source ./load-env.sh stack1.env
@@ -42,4 +42,11 @@ make fetch-include
 
 # (in contiki-ng/examples/rpl-border-router)
 make TARGET=cooja connect-router-cooja
+
+
+docker build backend/ -f backend/Dockerfile.spark -t sban_spark
+source ./load-env.sh backend.env
+docker-compose up -d
+
+../sbin/start-history-server.sh
 ```

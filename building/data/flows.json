@@ -19,6 +19,45 @@
         ]
     },
     {
+        "id": "681dd26744d83776",
+        "type": "subflow",
+        "name": "Slider with value",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 120,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "76bb5fd99c2d46ff"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 460,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "76bb5fd99c2d46ff",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "SLIDER_LABEL",
+                "type": "str",
+                "value": "Label"
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
         "id": "0f265edf35b211bf",
         "type": "mqtt-broker",
         "name": "Local broker",
@@ -46,19 +85,185 @@
         "sessionExpiry": ""
     },
     {
-        "id": "a72406f39cffe1ba",
-        "type": "debug",
-        "z": "a379f22ef37c9324",
-        "name": "debug 6",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 900,
-        "y": 580,
+        "id": "f8fe8c0673c3d32f",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "2418b8b198fdd87b",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "82d881adcb4a24e8",
+        "type": "ui_group",
+        "name": "Configure building",
+        "tab": "f8fe8c0673c3d32f",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "06361eee8f11cb36",
+        "type": "ui_group",
+        "name": "Fake weather",
+        "tab": "f8fe8c0673c3d32f",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "2545801375dbad2e",
+        "type": "ui_group",
+        "name": "Fake measure",
+        "tab": "f8fe8c0673c3d32f",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "76bb5fd99c2d46ff",
+        "type": "ui_slider",
+        "z": "681dd26744d83776",
+        "name": "",
+        "label": "${SLIDER_LABEL}",
+        "tooltip": "",
+        "group": "06361eee8f11cb36",
+        "order": 3,
+        "width": "5",
+        "height": "1",
+        "passthru": true,
+        "outs": "all",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "-10",
+        "max": "40",
+        "step": "1",
+        "className": "",
+        "x": 310,
+        "y": 100,
+        "wires": [
+            [
+                "d89d5cd9ce1c3891"
+            ]
+        ]
+    },
+    {
+        "id": "d89d5cd9ce1c3891",
+        "type": "ui_text",
+        "z": "681dd26744d83776",
+        "group": "06361eee8f11cb36",
+        "order": 3,
+        "width": "1",
+        "height": "1",
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 490,
+        "y": 80,
         "wires": []
     },
     {
@@ -77,8 +282,8 @@
         "once": false,
         "onceDelay": "0",
         "topic": "",
-        "x": 100,
-        "y": 80,
+        "x": 240,
+        "y": 60,
         "wires": [
             [
                 "2b3578a00bc4bd65"
@@ -86,51 +291,417 @@
         ]
     },
     {
-        "id": "fb2f201559625bb9",
-        "type": "function",
+        "id": "ebd26065844573b3",
+        "type": "mqtt out",
         "z": "a379f22ef37c9324",
-        "name": "Cache API result",
-        "func": "if (msg.payload) {\n    global.set('apiResult', msg.payload);\n} else {\n    msg.payload = global.get('apiResult');\n}\n\nreturn msg",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 370,
-        "y": 220,
+        "name": "",
+        "topic": "weather",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "0f265edf35b211bf",
+        "x": 780,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "2b3578a00bc4bd65",
+        "type": "openweathermap",
+        "z": "a379f22ef37c9324",
+        "name": "Milan 5 day forecast",
+        "wtype": "current",
+        "lon": "",
+        "lat": "",
+        "city": "${SBAN_FAKE_LOCATION_CITY}",
+        "country": "${SBAN_FAKE_LOCATION_COUNTRY}",
+        "language": "en",
+        "x": 500,
+        "y": 60,
         "wires": [
             [
-                "889bea52caffebdc",
                 "ebd26065844573b3"
             ]
         ]
     },
     {
-        "id": "5ba6d8e2c458d019",
-        "type": "inject",
+        "id": "82b6d9174854e6a7",
+        "type": "mqtt in",
         "z": "a379f22ef37c9324",
-        "name": "5s rate",
-        "props": [
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "x": 110,
-        "y": 220,
+        "name": "",
+        "topic": "weather",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "0f265edf35b211bf",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 770,
+        "y": 160,
         "wires": [
             [
-                "fb2f201559625bb9"
+                "73f7321fed762598"
             ]
         ]
     },
     {
-        "id": "ae9286d9daf968a4",
+        "id": "73f7321fed762598",
+        "type": "debug",
+        "z": "a379f22ef37c9324",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1060,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "c73f69217547ee72",
+        "type": "mqtt out",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "topic": "sensors/on",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "0f265edf35b211bf",
+        "x": 1030,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "a87d3326c7d09207",
+        "type": "mqtt out",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "topic": "sensors/off",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "0f265edf35b211bf",
+        "x": 1030,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "58ec12d00f19ea77",
+        "type": "mqtt out",
+        "z": "a379f22ef37c9324",
+        "name": "room/<ROOM_ID>/sensor/<SENSOR_ID>/attach",
+        "topic": "",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "0f265edf35b211bf",
+        "x": 1110,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "135c35738b5d58b6",
+        "type": "ui_switch",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Sensing",
+        "tooltip": "",
+        "group": "82d881adcb4a24e8",
+        "order": 0,
+        "width": "6",
+        "height": "2",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 220,
+        "y": 540,
+        "wires": [
+            [
+                "280bf7469641d2a2"
+            ]
+        ]
+    },
+    {
+        "id": "280bf7469641d2a2",
+        "type": "switch",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 470,
+        "y": 540,
+        "wires": [
+            [
+                "fe24457a39a8bcc4"
+            ],
+            [
+                "6c1aac601ffa421c"
+            ]
+        ]
+    },
+    {
+        "id": "0e8249f6a7575d54",
+        "type": "ui_form",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Attach sensor to room",
+        "group": "82d881adcb4a24e8",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "options": [
+            {
+                "label": "Room",
+                "value": "room",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Sensor",
+                "value": "sensor",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "room": "",
+            "sensor": ""
+        },
+        "payload": "",
+        "submit": "attach",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 200,
+        "y": 300,
+        "wires": [
+            [
+                "2f3cd1116c71e315"
+            ]
+        ]
+    },
+    {
+        "id": "8063fc4ee5d6dc0d",
+        "type": "ui_text",
+        "z": "a379f22ef37c9324",
+        "group": "82d881adcb4a24e8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1090,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "2f3cd1116c71e315",
+        "type": "function",
+        "z": "a379f22ef37c9324",
+        "name": "Form to topic",
+        "func": "const payload = msg.payload;\n\nif (payload.room < 0) {\n    return [null, { \n        className: \"notification-warn\",\n        payload: 'Room id cannot be negative' \n    }];\n}\nif (payload.sensor < 0) {\n    return [null, {\n        className: \"notification-warn\",\n        payload: 'Sensor id cannot be negative'\n    }];\n}\n\nmsg.topic = `room/${payload.room}/sensor/${payload.sensor}/attach`;\nmsg.payload = Date.now();\nreturn [\n    msg, \n    {\n        payload: `Attached sensor ${payload.sensor} to room ${payload.room}!`\n    }\n];\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 300,
+        "wires": [
+            [
+                "58ec12d00f19ea77"
+            ],
+            [
+                "8063fc4ee5d6dc0d",
+                "935a7cb2426ad83e"
+            ]
+        ]
+    },
+    {
+        "id": "59b6dd22e6093b97",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 420,
+        "wires": [
+            [
+                "8063fc4ee5d6dc0d"
+            ]
+        ]
+    },
+    {
+        "id": "935a7cb2426ad83e",
+        "type": "delay",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "4",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 720,
+        "y": 420,
+        "wires": [
+            [
+                "59b6dd22e6093b97"
+            ]
+        ]
+    },
+    {
+        "id": "fe24457a39a8bcc4",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 780,
+        "y": 500,
+        "wires": [
+            [
+                "c73f69217547ee72"
+            ]
+        ]
+    },
+    {
+        "id": "6c1aac601ffa421c",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 780,
+        "y": 560,
+        "wires": [
+            [
+                "a87d3326c7d09207"
+            ]
+        ]
+    },
+    {
+        "id": "6aeef971f4534343",
+        "type": "ui_slider",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Humidity",
+        "tooltip": "",
+        "group": "06361eee8f11cb36",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": "100",
+        "step": "5",
+        "className": "",
+        "x": 280,
+        "y": 700,
+        "wires": [
+            [
+                "c5f799fcb549e66c"
+            ]
+        ]
+    },
+    {
+        "id": "3eb57efa6c73fb55",
         "type": "inject",
         "z": "a379f22ef37c9324",
         "name": "",
@@ -145,97 +716,700 @@
         ],
         "repeat": "",
         "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
+        "once": true,
+        "onceDelay": "0",
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 340,
-        "y": 580,
+        "payload": "50",
+        "payloadType": "num",
+        "x": 170,
+        "y": 700,
         "wires": [
             [
-                "c143bfc1078291b8"
+                "6aeef971f4534343"
             ]
         ]
     },
     {
-        "id": "889bea52caffebdc",
-        "type": "debug",
+        "id": "301d6c7d98585ae2",
+        "type": "ui_slider",
         "z": "a379f22ef37c9324",
-        "name": "debug 8",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 740,
-        "y": 100,
+        "name": "",
+        "label": "Temperature",
+        "tooltip": "",
+        "group": "06361eee8f11cb36",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "-10",
+        "max": "40",
+        "step": "1",
+        "className": "",
+        "x": 290,
+        "y": 760,
+        "wires": [
+            [
+                "5dd3d916d7b93c1c"
+            ]
+        ]
+    },
+    {
+        "id": "8efc666466ea13b5",
+        "type": "inject",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "",
+        "payload": "22",
+        "payloadType": "num",
+        "x": 170,
+        "y": 760,
+        "wires": [
+            [
+                "301d6c7d98585ae2"
+            ]
+        ]
+    },
+    {
+        "id": "c5f799fcb549e66c",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "humidity",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 700,
+        "wires": [
+            [
+                "83bd8b417535b942"
+            ]
+        ]
+    },
+    {
+        "id": "5dd3d916d7b93c1c",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "tempc",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 760,
+        "wires": [
+            [
+                "83bd8b417535b942"
+            ]
+        ]
+    },
+    {
+        "id": "83bd8b417535b942",
+        "type": "join",
+        "z": "a379f22ef37c9324",
+        "name": "Fake weather",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 700,
+        "y": 740,
+        "wires": [
+            [
+                "1445f7d3d145e396"
+            ]
+        ]
+    },
+    {
+        "id": "fdff6c37ad434bfd",
+        "type": "ui_button",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "group": "06361eee8f11cb36",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Send",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 710,
+        "y": 820,
+        "wires": [
+            [
+                "e4045e1fb0e8276a"
+            ]
+        ]
+    },
+    {
+        "id": "1445f7d3d145e396",
+        "type": "function",
+        "z": "a379f22ef37c9324",
+        "name": "Cache weather",
+        "func": "flow.set('fakeWeather', msg.payload);\n",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 740,
         "wires": []
     },
     {
-        "id": "ebd26065844573b3",
+        "id": "e4045e1fb0e8276a",
+        "type": "function",
+        "z": "a379f22ef37c9324",
+        "name": "Get cached weather",
+        "func": "msg.payload = flow.get('fakeWeather');\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 820,
+        "wires": [
+            [
+                "3d0b7aa7c6f2b7e6"
+            ]
+        ]
+    },
+    {
+        "id": "3d0b7aa7c6f2b7e6",
         "type": "mqtt out",
         "z": "a379f22ef37c9324",
         "name": "",
-        "topic": "area/${SBAN_AREA}/building/${SBAN_BUILDING}/openweather",
+        "topic": "weather",
         "qos": "2",
-        "retain": "",
+        "retain": "true",
         "respTopic": "",
         "contentType": "",
         "userProps": "",
         "correl": "",
         "expiry": "",
         "broker": "0f265edf35b211bf",
-        "x": 950,
-        "y": 220,
+        "x": 1220,
+        "y": 820,
         "wires": []
     },
     {
-        "id": "2b3578a00bc4bd65",
-        "type": "openweathermap",
+        "id": "7d96c433e7675b2a",
+        "type": "ui_slider",
         "z": "a379f22ef37c9324",
-        "name": "Milan 5 day forecast",
-        "wtype": "current",
-        "lon": "",
-        "lat": "",
-        "city": "${SBAN_FAKE_LOCATION_CITY}",
-        "country": "${SBAN_FAKE_LOCATION_COUNTRY}",
-        "language": "en",
-        "x": 360,
-        "y": 80,
+        "name": "",
+        "label": "Humidity",
+        "tooltip": "",
+        "group": "2545801375dbad2e",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": "100",
+        "step": "5",
+        "className": "",
+        "x": 280,
+        "y": 1040,
         "wires": [
             [
-                "fb2f201559625bb9"
+                "44c002511c1b1e75"
             ]
         ]
     },
     {
-        "id": "c143bfc1078291b8",
-        "type": "uibuilder",
+        "id": "15749b8452a4b196",
+        "type": "inject",
         "z": "a379f22ef37c9324",
         "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
         "topic": "",
-        "url": "building-dashboard",
-        "fwdInMessages": false,
-        "allowScripts": false,
-        "allowStyles": false,
-        "copyIndex": true,
-        "templateFolder": "blank",
-        "extTemplate": "",
-        "showfolder": false,
-        "reload": false,
-        "sourceFolder": "src",
-        "deployedVersion": "5.1.1",
-        "x": 620,
-        "y": 580,
+        "payload": "50",
+        "payloadType": "num",
+        "x": 170,
+        "y": 1040,
         "wires": [
             [
-                "a72406f39cffe1ba"
+                "7d96c433e7675b2a"
+            ]
+        ]
+    },
+    {
+        "id": "061e5f276ff15ebd",
+        "type": "ui_slider",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Temperature",
+        "tooltip": "",
+        "group": "2545801375dbad2e",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "-10",
+        "max": "40",
+        "step": "1",
+        "className": "",
+        "x": 290,
+        "y": 1100,
+        "wires": [
+            [
+                "1aaf4345d41042ad"
+            ]
+        ]
+    },
+    {
+        "id": "776f7ec278432778",
+        "type": "inject",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "",
+        "payload": "22",
+        "payloadType": "num",
+        "x": 170,
+        "y": 1100,
+        "wires": [
+            [
+                "061e5f276ff15ebd"
+            ]
+        ]
+    },
+    {
+        "id": "44c002511c1b1e75",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "humidity",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 1040,
+        "wires": [
+            [
+                "6e35514ad5e746b6"
+            ]
+        ]
+    },
+    {
+        "id": "1aaf4345d41042ad",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "temperature",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 1100,
+        "wires": [
+            [
+                "6e35514ad5e746b6"
+            ]
+        ]
+    },
+    {
+        "id": "6e35514ad5e746b6",
+        "type": "join",
+        "z": "a379f22ef37c9324",
+        "name": "Fake weather",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 700,
+        "y": 1080,
+        "wires": [
+            [
+                "5b2f227a2959cef1"
+            ]
+        ]
+    },
+    {
+        "id": "20b8b9ea1bc1f4bb",
+        "type": "ui_button",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "group": "2545801375dbad2e",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Send",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 230,
+        "y": 1220,
+        "wires": [
+            [
+                "0a599d5f2b260d6a"
+            ]
+        ]
+    },
+    {
+        "id": "21a638e9c63f7b79",
+        "type": "function",
+        "z": "a379f22ef37c9324",
+        "name": "Cache measure",
+        "func": "flow.set('fakeMeasure', msg.payload);\n",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "0a599d5f2b260d6a",
+        "type": "function",
+        "z": "a379f22ef37c9324",
+        "name": "Get cached and set topic",
+        "func": "const sensor = flow.get('fakeSensor');\nif (!sensor) {\n    return [null, {\n        payload: \"Sensor not selected!\",\n    }];\n}\n\nmsg.payload = flow.get('fakeMeasure');\nmsg.topic = `room/${sensor.room}/sensor/${sensor.sensor}/measure`;\n\nreturn [msg, null];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 1220,
+        "wires": [
+            [
+                "2ad1d4854d9a9f1c"
             ],
+            [
+                "1b95c465ee786478",
+                "52fad6d6e3c585d5"
+            ]
+        ]
+    },
+    {
+        "id": "2ad1d4854d9a9f1c",
+        "type": "mqtt out",
+        "z": "a379f22ef37c9324",
+        "name": "room/<ROOM_ID>/sensor/<SENSOR_ID>/measure",
+        "topic": "",
+        "qos": "2",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "0f265edf35b211bf",
+        "x": 1090,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "27b8b68f12b770cc",
+        "type": "ui_form",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Sensor to fake",
+        "group": "2545801375dbad2e",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "options": [
+            {
+                "label": "Room",
+                "value": "room",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Sensor",
+                "value": "sensor",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "room": "",
+            "sensor": ""
+        },
+        "payload": "",
+        "submit": "Select",
+        "cancel": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 700,
+        "y": 1000,
+        "wires": [
+            [
+                "253c4071464e1d54"
+            ]
+        ]
+    },
+    {
+        "id": "253c4071464e1d54",
+        "type": "function",
+        "z": "a379f22ef37c9324",
+        "name": "Cache sensor",
+        "func": "flow.set('fakeSensor', msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 1000,
+        "wires": [
             []
+        ]
+    },
+    {
+        "id": "1b95c465ee786478",
+        "type": "ui_text",
+        "z": "a379f22ef37c9324",
+        "group": "2545801375dbad2e",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Error message",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 980,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "ef3c52d8bee091e4",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 820,
+        "y": 1340,
+        "wires": [
+            [
+                "1b95c465ee786478"
+            ]
+        ]
+    },
+    {
+        "id": "52fad6d6e3c585d5",
+        "type": "delay",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "4",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 680,
+        "y": 1340,
+        "wires": [
+            [
+                "ef3c52d8bee091e4"
+            ]
+        ]
+    },
+    {
+        "id": "6ed1ea4ab74ddb58",
+        "type": "inject",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 110,
+        "y": 540,
+        "wires": [
+            [
+                "135c35738b5d58b6"
+            ]
+        ]
+    },
+    {
+        "id": "5b2f227a2959cef1",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "timestamp",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 1080,
+        "wires": [
+            [
+                "21a638e9c63f7b79"
+            ]
         ]
     }
 ]

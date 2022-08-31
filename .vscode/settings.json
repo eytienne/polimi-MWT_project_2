@@ -1,5 +1,12 @@
 {
     "files.associations": {
         "stdio.h": "c"
-    }
+    },
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m",
+    "java.configuration.runtimes": [
+		{
+			"name": "JavaSE-11",
+			"path": "/usr/lib/jvm/java-11-openjdk-amd64",
+		}
+	],
 }

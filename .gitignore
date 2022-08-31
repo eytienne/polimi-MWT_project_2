@@ -3,3 +3,5 @@ build
 include
 *.native
 *.cooja
+# Ignore Gradle project-specific cache directory
+.gradle

@@ -56,7 +56,7 @@ PROCESS_THREAD(room_sensor_process, ev, data)
   PROCESS_BEGIN();
 
   #if CONTIKI_TARGET_COOJA
-  sensorId = simMoteId;
+  sensorId = simMoteID;
   #else
   LOG_ERR("Function only with cooja target");
   PROCESS_EXIT();
@@ -71,7 +71,7 @@ PROCESS_THREAD(room_sensor_process, ev, data)
 
     PROCESS_YIELD();
 
-    if (ev == PROCESS_EVENT_TIMER && data == &et) {
+    if ((ev == PROCESS_EVENT_TIMER && data == &et) || ev == PROCESS_EVENT_POLL) {
       state_machine();
     }
 

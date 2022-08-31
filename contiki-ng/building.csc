@@ -2,6 +2,7 @@
 <simconf>
   <simulation>
     <title>Building</title>
+    <speedlimit>1.0</speedlimit>
     <randomseed>123456</randomseed>
     <motedelay_us>1000000</motedelay_us>
     <radiomedium>
@@ -16,7 +17,7 @@
     </events>
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
-      <identifier>mtype504275593</identifier>
+      <identifier>mtype986888568</identifier>
       <description>Border router</description>
       <source>[CONTIKI_DIR]/examples/rpl-border-router/border-router.c</source>
       <commands>make -j$(CPUS) border-router.cooja TARGET=cooja</commands>
@@ -40,7 +41,7 @@
     </motetype>
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
-      <identifier>mtype163742358</identifier>
+      <identifier>mtype273408501</identifier>
       <description>Room sensor</description>
       <source>[CONTIKI_DIR]/examples/room-sensor/room-sensor.c</source>
       <commands>make -j$(CPUS) room-sensor.cooja TARGET=cooja</commands>
@@ -78,7 +79,7 @@
         <bitrate>250.0</bitrate>
       </interface_config>
       <interface_config>org.contikios.cooja.contikimote.interfaces.ContikiEEPROM</interface_config>
-      <motetype_identifier>mtype504275593</motetype_identifier>
+      <motetype_identifier>mtype986888568</motetype_identifier>
     </mote>
     <mote>
       <interface_config>
@@ -96,14 +97,14 @@
         <bitrate>250.0</bitrate>
       </interface_config>
       <interface_config>org.contikios.cooja.contikimote.interfaces.ContikiEEPROM</interface_config>
-      <motetype_identifier>mtype163742358</motetype_identifier>
+      <motetype_identifier>mtype273408501</motetype_identifier>
     </mote>
   </simulation>
   <plugin>
     org.contikios.cooja.plugins.SimControl
     <width>280</width>
-    <z>5</z>
-    <height>160</height>
+    <z>1</z>
+    <height>193</height>
     <location_x>400</location_x>
     <location_y>0</location_y>
   </plugin>
@@ -118,7 +119,7 @@
       <viewport>2.695716512783621 0.0 0.0 2.695716512783621 78.32651484364709 172.55512156459517</viewport>
     </plugin_config>
     <width>400</width>
-    <z>0</z>
+    <z>5</z>
     <height>400</height>
     <location_x>1</location_x>
     <location_y>1</location_y>
@@ -131,10 +132,10 @@
       <coloring />
     </plugin_config>
     <width>1246</width>
-    <z>4</z>
-    <height>240</height>
+    <z>0</z>
+    <height>476</height>
     <location_x>400</location_x>
-    <location_y>160</location_y>
+    <location_y>195</location_y>
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.TimeLine
@@ -144,7 +145,7 @@
       <showRadioRXTX />
       <showRadioHW />
       <showLEDs />
-      <zoomfactor>500.0</zoomfactor>
+      <zoomfactor>100000.0</zoomfactor>
     </plugin_config>
     <width>1646</width>
     <z>3</z>
@@ -160,7 +161,7 @@
     </plugin_config>
     <width>966</width>
     <z>2</z>
-    <height>160</height>
+    <height>195</height>
     <location_x>680</location_x>
     <location_y>0</location_y>
   </plugin>
@@ -172,10 +173,10 @@
       <bound>true</bound>
     </plugin_config>
     <width>362</width>
-    <z>1</z>
+    <z>4</z>
     <height>116</height>
-    <location_x>49</location_x>
-    <location_y>454</location_y>
+    <location_x>16</location_x>
+    <location_y>450</location_y>
   </plugin>
 </simconf>
 

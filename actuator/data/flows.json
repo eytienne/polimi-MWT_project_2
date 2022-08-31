@@ -110,8 +110,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 190,
-        "y": 300,
+        "x": 150,
+        "y": 320,
         "wires": [
             [
                 "f4920638812117c4"
@@ -129,12 +129,11 @@
         "initialize": "context.set('hvac', {\n    heating: 0,\n    ventilation: 0,\n    cooling: 0,\n});\ncontext.set('ranges', {\n    humidity_max: 50,\n    temperature_min: 19,\n    temperature_max: 25,\n});\n",
         "finalize": "",
         "libs": [],
-        "x": 880,
-        "y": 420,
+        "x": 860,
+        "y": 480,
         "wires": [
             [
-                "6889aa78dbcb54fe",
-                "7d0763a4d217ba8b"
+                "6889aa78dbcb54fe"
             ]
         ]
     },
@@ -152,39 +151,9 @@
         "correl": "",
         "expiry": "",
         "broker": "ebd16bd11c4c0e21",
-        "x": 1170,
-        "y": 420,
+        "x": 1150,
+        "y": 480,
         "wires": []
-    },
-    {
-        "id": "ae56f555fb38db06",
-        "type": "inject",
-        "z": "24e0482f1e78eedf",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "v": "room/${ROOM_ID}/sensor/1/measure",
-                "vt": "env"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "{\"humidity\":55,\"temperature\":22}",
-        "payloadType": "json",
-        "x": 130,
-        "y": 120,
-        "wires": [
-            [
-                "7dd1598d351354cf"
-            ]
-        ]
     },
     {
         "id": "9e80bd9838be8eb0",
@@ -199,8 +168,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 770,
-        "y": 40,
+        "x": 670,
+        "y": 100,
         "wires": [
             [
                 "e32db9aec9b59487"
@@ -211,8 +180,8 @@
         "id": "893b6fd18d8f1347",
         "type": "debug",
         "z": "24e0482f1e78eedf",
-        "name": "debug 3",
-        "active": false,
+        "name": "debug 2",
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -220,26 +189,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1200,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "7dd1598d351354cf",
-        "type": "mqtt out",
-        "z": "24e0482f1e78eedf",
-        "name": "room/${ROOM_ID}/sensor/1/measure",
-        "topic": "",
-        "qos": "",
-        "retain": "",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "ebd16bd11c4c0e21",
-        "x": 490,
-        "y": 120,
+        "x": 1100,
+        "y": 220,
         "wires": []
     },
     {
@@ -262,8 +213,8 @@
         "reduceInit": "",
         "reduceInitType": "num",
         "reduceFixup": "",
-        "x": 620,
-        "y": 460,
+        "x": 580,
+        "y": 480,
         "wires": [
             [
                 "3d5d810b09e90f10"
@@ -275,7 +226,7 @@
         "type": "debug",
         "z": "24e0482f1e78eedf",
         "name": "debug 1",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -283,8 +234,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 600,
-        "y": 320,
+        "x": 560,
+        "y": 340,
         "wires": []
     },
     {
@@ -292,8 +243,8 @@
         "type": "subflow:5ea8b82df2a9dede",
         "z": "24e0482f1e78eedf",
         "name": "",
-        "x": 400,
-        "y": 400,
+        "x": 360,
+        "y": 420,
         "wires": [
             [
                 "1c68d988cfdf5243",
@@ -306,29 +257,12 @@
         "type": "subflow:5ea8b82df2a9dede",
         "z": "24e0482f1e78eedf",
         "name": "",
-        "x": 1000,
-        "y": 100,
+        "x": 900,
+        "y": 160,
         "wires": [
             [
                 "893b6fd18d8f1347"
             ]
         ]
-    },
-    {
-        "id": "7d0763a4d217ba8b",
-        "type": "debug",
-        "z": "24e0482f1e78eedf",
-        "name": "debug 2",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 280,
-        "wires": []
     }
 ]
