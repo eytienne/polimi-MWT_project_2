@@ -36,7 +36,8 @@ PROCESS_NAME(room_sensor_process);
 #define DEFAULT_PASSWORD "AUTHZ"
 #define DEFAULT_BROKER_PORT 1883
 
-static struct mqtt_connection conn;
+static struct mqtt_connection sub_conn;
+static struct mqtt_connection pub_conn;
 
 #define CLIENT_ID_SIZE 70
 struct mqtt_conf_s {
@@ -44,7 +45,8 @@ struct mqtt_conf_s {
 	uint16_t broker_port;
 	char username[32];
 	char password[32];
-	char client_id[CLIENT_ID_SIZE + 1];
+	char sub_client_id[CLIENT_ID_SIZE + 1];
+	char pub_client_id[CLIENT_ID_SIZE + 1];
 } mqtt_conf;
 
 enum machine_state {
@@ -98,12 +100,14 @@ extern "C" void initialize() {
 	memcpy(mqtt_conf.username, DEFAULT_USERNAME, strlen(DEFAULT_USERNAME));
 	memcpy(mqtt_conf.password, DEFAULT_PASSWORD, strlen(DEFAULT_PASSWORD));
 
-	snprintf(mqtt_conf.client_id, CLIENT_ID_SIZE,
+	int len = snprintf(mqtt_conf.sub_client_id, CLIENT_ID_SIZE,
 			 "d:room-sensor:%02x%02x%02x%02x%02x%02x", linkaddr_node_addr.u8[0],
 			 linkaddr_node_addr.u8[1], linkaddr_node_addr.u8[2],
 			 linkaddr_node_addr.u8[5], linkaddr_node_addr.u8[6],
 			 linkaddr_node_addr.u8[7]);
-	mqtt_conf.client_id[CLIENT_ID_SIZE - 1] = '\0';
+	strncpy(mqtt_conf.pub_client_id, mqtt_conf.sub_client_id, CLIENT_ID_SIZE);
+	strncpy(mqtt_conf.sub_client_id + len, "-sub", CLIENT_ID_SIZE - len);
+	strncpy(mqtt_conf.pub_client_id + len, "-pub", CLIENT_ID_SIZE - len);
 
 	stringstream ss;
 	ss << "room/+/sensor/" << sensorId << "/attach";
@@ -141,7 +145,7 @@ static string currentPayloadIfAny;
 static void _subscribe(const string &topic) {
 	auto _topic = topic.c_str();
 	mqtt_status_t status =
-		mqtt_subscribe(&conn, NULL, (char *)_topic, MQTT_QOS_LEVEL_0);
+		mqtt_subscribe(&sub_conn, NULL, (char *)_topic, MQTT_QOS_LEVEL_0);
 	auto format = "Subscribing to '%s' with status %d\n";
 	if (status == MQTT_STATUS_OK) {
 		LOG_INFO(format, _topic, status);
@@ -152,7 +156,7 @@ static void _subscribe(const string &topic) {
 
 static void _unsubscribe(const string &topic) {
 	auto _topic = topic.c_str();
-	mqtt_status_t status = mqtt_unsubscribe(&conn, NULL, (char *)_topic);
+	mqtt_status_t status = mqtt_unsubscribe(&sub_conn, NULL, (char *)_topic);
 	auto format = "Unsubscribing from '%s' with status %d\n";
 	if (status == MQTT_STATUS_OK) {
 		LOG_INFO(format, _topic, status);
@@ -164,8 +168,8 @@ static void _unsubscribe(const string &topic) {
 static void _publish(const string &topic, const string &payload) {
 	auto _topic = topic.c_str();
 	mqtt_status_t status =
-		mqtt_publish(&conn, NULL, (char *)_topic, (uint8_t *)payload.c_str(),
-					 payload.size(), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
+		mqtt_publish(&pub_conn, NULL, (char *)_topic, (uint8_t *)payload.c_str(),
+					 payload.size(), MQTT_QOS_LEVEL_1, MQTT_RETAIN_OFF);
 	auto format = "Publishing to '%s' with status %d\n";
 	if (status == MQTT_STATUS_OK) {
 		LOG_INFO(format, _topic, status);
@@ -211,18 +215,17 @@ static void publish(const string &topic, const string &payload) {
 		break;                                                                 \
 	}
 
-static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
+static void sub_event_callback(struct mqtt_connection *m, mqtt_event_t event,
 						   void *data) {
 	switch (event) {
 	case MQTT_EVENT_CONNECTED: {
-		LOG_INFO("MQTT connected to %s:%d!\n", mqtt_conf.broker_ip,
+		LOG_INFO("MQTT connected to %s:%d! (sub)\n", mqtt_conf.broker_ip,
 				 mqtt_conf.broker_port);
-		state = STATE_CONNECTED;
 		process_poll(&room_sensor_process);
-		break;
+		return;
 	}
 	case MQTT_EVENT_DISCONNECTED: {
-		LOG_INFO("MQTT disconnected: reason %u\n", *((mqtt_event_t *)data));
+		LOG_INFO("MQTT disconnected: reason %u (sub)\n", *((mqtt_event_t *)data));
 		state = STATE_DISCONNECTED;
 		process_poll(&room_sensor_process);
 		return;
@@ -299,7 +302,7 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 					topic.c_str());
 			break;
 		}
-		break;
+		return;
 	}
 	case MQTT_EVENT_SUBACK: {
 		auto queued = mqtt_queue.front();
@@ -307,7 +310,7 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 		LOG_INFO("Subscribed to '%s' successfully\n",
 				 queued.second.topic.c_str());
 		busy = false;
-		break;
+		return;
 	}
 	case MQTT_EVENT_UNSUBACK: {
 		auto queued = mqtt_queue.front();
@@ -315,7 +318,28 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 		LOG_INFO("Unsubscribed from '%s' successfully\n",
 				 queued.second.topic.c_str());
 		busy = false;
-		break;
+		return;
+	}
+	default:
+		LOG_WARN("Application got a unhandled MQTT event: %i (sub)\n", event);
+		return;
+	}
+}
+
+static void pub_event_callback(struct mqtt_connection *m, mqtt_event_t event,
+						   void *data) {
+	switch (event) {
+	case MQTT_EVENT_CONNECTED: {
+		LOG_INFO("MQTT connected to %s:%d! (pub)\n", mqtt_conf.broker_ip,
+				 mqtt_conf.broker_port);
+		process_poll(&room_sensor_process);
+		return;
+	}
+	case MQTT_EVENT_DISCONNECTED: {
+		LOG_INFO("MQTT disconnected: reason %u (pub)\n", *((mqtt_event_t *)data));
+		state = STATE_DISCONNECTED;
+		process_poll(&room_sensor_process);
+		return;
 	}
 	case MQTT_EVENT_PUBACK: {
 		auto queued = mqtt_queue.front();
@@ -323,14 +347,13 @@ static void event_callback(struct mqtt_connection *m, mqtt_event_t event,
 		LOG_INFO("Published from '%s' successfully\n",
 				 queued.second.topic.c_str());
 		busy = false;
-		break;
+		return;
 	}
 	default:
-		LOG_WARN("Application got a unhandled MQTT event: %i\n", event);
-		break;
+		LOG_WARN("Application got a unhandled MQTT event: %i (pub)\n", event);
+		return;
 	}
 }
-
 
 extern "C" void state_machine() {
 	LOG_DBG("state_machine %d %ld\n", state, mqtt_queue.size());
@@ -344,28 +367,37 @@ extern "C" void state_machine() {
 	}
 
 	switch (state) {
-	case STATE_INIT:
-		mqtt_register(&conn, &room_sensor_process, mqtt_conf.client_id,
-					  event_callback, MAX_TCP_SEGMENT_SIZE);
+	case STATE_INIT: {
+		mqtt_register(&sub_conn, &room_sensor_process, mqtt_conf.sub_client_id,
+					  sub_event_callback, MAX_TCP_SEGMENT_SIZE);
+		mqtt_register(&pub_conn, &room_sensor_process, mqtt_conf.pub_client_id,
+					  pub_event_callback, MAX_TCP_SEGMENT_SIZE);
 
 		state = STATE_REGISTERED;
 		LOG_INFO("MQTT registered\n");
+	}
 	case STATE_REGISTERED:
 		if (!have_connectivity()) {
 			LOG_WARN("No connectivity!\n");
 			etimer_set(&et, CLOCK_SECOND);
-		} else {
-			mqtt_status_t status = mqtt_connect(
-				&conn, mqtt_conf.broker_ip, mqtt_conf.broker_port,
-				60 * CLOCK_SECOND, MQTT_CLEAN_SESSION_ON);
-
-			LOG_INFO("MQTT connecting with status %d\n", status);
-			state = STATE_CONNECTING;
-			etimer_stop(&et);
 		}
-		return;
+		if(!mqtt_connected(&sub_conn)) {
+			mqtt_status_t status = mqtt_connect(
+				&sub_conn, mqtt_conf.broker_ip, mqtt_conf.broker_port,
+				60 * CLOCK_SECOND, MQTT_CLEAN_SESSION_ON);
+			LOG_INFO("MQTT connecting with status %d (sub)\n", status);
+		}
+		if(!mqtt_connected(&pub_conn)) {
+			mqtt_status_t status = mqtt_connect(
+				&pub_conn, mqtt_conf.broker_ip, mqtt_conf.broker_port,
+				60 * CLOCK_SECOND, MQTT_CLEAN_SESSION_ON);
+			LOG_INFO("MQTT connecting with status %d (pub)\n", status);
+		}
+
+		state = STATE_CONNECTING;
+		/* continue to next case */
 	case STATE_CONNECTING:
-		if (mqtt_connected(&conn)) {
+		if (mqtt_connected(&sub_conn) && mqtt_connected(&pub_conn)) {
 			state = STATE_CONNECTED;
 			process_poll(&room_sensor_process);
 			return;
@@ -374,7 +406,7 @@ extern "C" void state_machine() {
 		etimer_set(&et, CLOCK_SECOND);
 		return;
 	case STATE_CONNECTED:
-		if (!mqtt_available(&conn)) {
+		if (!mqtt_available(&sub_conn)) {
 			LOG_WARN("Connection not available for configuration\n");
 			etimer_set(&et, CLOCK_SECOND);
 			return;
@@ -388,7 +420,7 @@ extern "C" void state_machine() {
 		etimer_set(&et, 2*CLOCK_SECOND);
 		return;
 	case STATE_ON:
-		if (!mqtt_available(&conn)) {
+		if (!mqtt_available(&pub_conn)) {
 			LOG_WARN("Connection not available for publishing\n");
 			etimer_set(&et, CLOCK_SECOND);
 			return;
@@ -407,27 +439,29 @@ extern "C" void state_machine() {
 			return;
 		}
 	case STATE_MQTT_DEQUEUING:
-		if (!mqtt_available(&conn)) {
-			LOG_WARN("Connection not available for dequeuing\n");
-		} else if(busy) {
+		if (busy) {
 			LOG_WARN("MQTT busy\n");
 		} else {
 			auto queued = mqtt_queue.front();
-			currentTopic = queued.second.topic;
-			currentPayloadIfAny = queued.second.payloadIfAny;
-			switch (queued.first) {
-			case MQTT_SUBSCRIBE:
-				_subscribe(currentTopic);
-				break;
-			case MQTT_UNSUBSCRIBE:
-				_unsubscribe(currentTopic);
-				break;
-			case MQTT_PUBLISH:
-				_publish(currentTopic, currentPayloadIfAny);
-				break;
+			if (!mqtt_available(queued.first == MQTT_PUBLISH ? &pub_conn : &sub_conn)) {
+				LOG_WARN("Connection not available for dequeuing\n");
+			} else {
+				currentTopic = queued.second.topic;
+				currentPayloadIfAny = queued.second.payloadIfAny;
+				switch (queued.first) {
+				case MQTT_SUBSCRIBE:
+					_subscribe(currentTopic);
+					break;
+				case MQTT_UNSUBSCRIBE:
+					_unsubscribe(currentTopic);
+					break;
+				case MQTT_PUBLISH:
+					_publish(currentTopic, currentPayloadIfAny);
+					break;
+				}
+				process_poll(&room_sensor_process);
+				return;
 			}
-			process_poll(&room_sensor_process);
-			return;
 		}
 		etimer_set(&et, CLOCK_SECOND);
 		return;
