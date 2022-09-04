@@ -206,7 +206,6 @@ static void publish(const string &topic, const string &payload) {
 	}
 	// keep payload if not just published
 	mqtt_queue.push_back({MQTT_PUBLISH, {topic, empty ? "" : payload}});
-	LOG_DBG("publish call %ld\n", mqtt_queue.size());
 }
 
 #define _ASSERT_FORMAT(expr)                                                   \
@@ -356,13 +355,10 @@ static void pub_event_callback(struct mqtt_connection *m, mqtt_event_t event,
 }
 
 extern "C" void state_machine() {
-	LOG_DBG("state_machine %d %ld\n", state, mqtt_queue.size());
-
 	if (state != STATE_MQTT_DEQUEUING && !mqtt_queue.empty()) {
 		previousState = state;
 		state = STATE_MQTT_DEQUEUING;
 	} else if(state == STATE_MQTT_DEQUEUING && mqtt_queue.empty()) {
-		LOG_DBG("queue empty %d\n", previousState);
 		state = previousState;
 	}
 

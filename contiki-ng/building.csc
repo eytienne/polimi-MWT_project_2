@@ -17,7 +17,7 @@
     </events>
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
-      <identifier>mtype986888568</identifier>
+      <identifier>mtype262793227</identifier>
       <description>Border router</description>
       <source>[CONTIKI_DIR]/examples/rpl-border-router/border-router.c</source>
       <commands>make -j$(CPUS) border-router.cooja TARGET=cooja</commands>
@@ -41,7 +41,7 @@
     </motetype>
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
-      <identifier>mtype273408501</identifier>
+      <identifier>mtype967826534</identifier>
       <description>Room sensor</description>
       <source>[CONTIKI_DIR]/examples/room-sensor/room-sensor.c</source>
       <commands>make -j$(CPUS) room-sensor.cooja TARGET=cooja</commands>
@@ -79,7 +79,7 @@
         <bitrate>250.0</bitrate>
       </interface_config>
       <interface_config>org.contikios.cooja.contikimote.interfaces.ContikiEEPROM</interface_config>
-      <motetype_identifier>mtype986888568</motetype_identifier>
+      <motetype_identifier>mtype262793227</motetype_identifier>
     </mote>
     <mote>
       <interface_config>
@@ -97,7 +97,7 @@
         <bitrate>250.0</bitrate>
       </interface_config>
       <interface_config>org.contikios.cooja.contikimote.interfaces.ContikiEEPROM</interface_config>
-      <motetype_identifier>mtype273408501</motetype_identifier>
+      <motetype_identifier>mtype967826534</motetype_identifier>
     </mote>
   </simulation>
   <plugin>
@@ -119,7 +119,7 @@
       <viewport>2.695716512783621 0.0 0.0 2.695716512783621 78.32651484364709 172.55512156459517</viewport>
     </plugin_config>
     <width>400</width>
-    <z>5</z>
+    <z>2</z>
     <height>400</height>
     <location_x>1</location_x>
     <location_y>1</location_y>
@@ -148,7 +148,7 @@
       <zoomfactor>100000.0</zoomfactor>
     </plugin_config>
     <width>1646</width>
-    <z>3</z>
+    <z>4</z>
     <height>166</height>
     <location_x>0</location_x>
     <location_y>827</location_y>
@@ -160,7 +160,7 @@
       <decorations>true</decorations>
     </plugin_config>
     <width>966</width>
-    <z>2</z>
+    <z>3</z>
     <height>195</height>
     <location_x>680</location_x>
     <location_y>0</location_y>
@@ -173,7 +173,7 @@
       <bound>true</bound>
     </plugin_config>
     <width>362</width>
-    <z>4</z>
+    <z>5</z>
     <height>116</height>
     <location_x>16</location_x>
     <location_y>450</location_y>

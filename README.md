@@ -50,3 +50,8 @@ docker-compose up -d
 
 ../sbin/start-history-server.sh
 ```
+
+MQTT Connector
+tcp://mqtt.sban.org
+sban-measure
+area/+/building/+/room/+/sensor/+/measure
