@@ -296,7 +296,7 @@
         "z": "a379f22ef37c9324",
         "name": "",
         "topic": "weather",
-        "qos": "2",
+        "qos": "1",
         "retain": "true",
         "respTopic": "",
         "contentType": "",
@@ -746,7 +746,7 @@
         "topicType": "msg",
         "min": "-10",
         "max": "40",
-        "step": "1",
+        "step": "5",
         "className": "",
         "x": 290,
         "y": 760,
@@ -935,7 +935,7 @@
         "z": "a379f22ef37c9324",
         "name": "",
         "topic": "weather",
-        "qos": "2",
+        "qos": "1",
         "retain": "true",
         "respTopic": "",
         "contentType": "",
@@ -955,7 +955,7 @@
         "label": "Humidity",
         "tooltip": "",
         "group": "2545801375dbad2e",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -967,7 +967,7 @@
         "step": "5",
         "className": "",
         "x": 280,
-        "y": 1040,
+        "y": 1080,
         "wires": [
             [
                 "44c002511c1b1e75"
@@ -996,7 +996,7 @@
         "payload": "50",
         "payloadType": "num",
         "x": 170,
-        "y": 1040,
+        "y": 1080,
         "wires": [
             [
                 "7d96c433e7675b2a"
@@ -1011,7 +1011,7 @@
         "label": "Temperature",
         "tooltip": "",
         "group": "2545801375dbad2e",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -1020,10 +1020,10 @@
         "topicType": "msg",
         "min": "-10",
         "max": "40",
-        "step": "1",
+        "step": "5",
         "className": "",
         "x": 290,
-        "y": 1100,
+        "y": 1140,
         "wires": [
             [
                 "1aaf4345d41042ad"
@@ -1052,7 +1052,7 @@
         "payload": "22",
         "payloadType": "num",
         "x": 170,
-        "y": 1100,
+        "y": 1140,
         "wires": [
             [
                 "061e5f276ff15ebd"
@@ -1079,7 +1079,7 @@
         "to": "",
         "reg": false,
         "x": 470,
-        "y": 1040,
+        "y": 1080,
         "wires": [
             [
                 "6e35514ad5e746b6"
@@ -1106,7 +1106,7 @@
         "to": "",
         "reg": false,
         "x": 470,
-        "y": 1100,
+        "y": 1140,
         "wires": [
             [
                 "6e35514ad5e746b6"
@@ -1134,38 +1134,10 @@
         "reduceInitType": "",
         "reduceFixup": "",
         "x": 700,
-        "y": 1080,
+        "y": 1120,
         "wires": [
             [
                 "5b2f227a2959cef1"
-            ]
-        ]
-    },
-    {
-        "id": "20b8b9ea1bc1f4bb",
-        "type": "ui_button",
-        "z": "a379f22ef37c9324",
-        "name": "",
-        "group": "2545801375dbad2e",
-        "order": 4,
-        "width": 0,
-        "height": 0,
-        "passthru": false,
-        "label": "Send",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
-        "className": "",
-        "icon": "",
-        "payload": "",
-        "payloadType": "str",
-        "topic": "topic",
-        "topicType": "msg",
-        "x": 230,
-        "y": 1220,
-        "wires": [
-            [
-                "0a599d5f2b260d6a"
             ]
         ]
     },
@@ -1180,8 +1152,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1140,
-        "y": 1080,
+        "x": 1160,
+        "y": 1120,
         "wires": []
     },
     {
@@ -1189,17 +1161,18 @@
         "type": "function",
         "z": "a379f22ef37c9324",
         "name": "Get cached and set topic",
-        "func": "const sensor = flow.get('fakeSensor');\nif (!sensor) {\n    return [null, {\n        payload: \"Sensor not selected!\",\n    }];\n}\n\nmsg.payload = flow.get('fakeMeasure');\nmsg.topic = `room/${sensor.room}/sensor/${sensor.sensor}/measure`;\n\nreturn [msg, null];",
+        "func": "const sensor = flow.get('fakeSensor');\nif (!sensor) {\n    return [null, {\n        payload: \"Sensor not selected!\",\n    }];\n}\n\nconst measure = flow.get('fakeMeasure');\nif (!measure) {\n    return [null, {\n        payload: \"Measure not set!\",\n    }];\n}\nmsg.payload = measure \nmsg.topic = `room/${sensor.room}/sensor/${sensor.sensor}/measure`;\n\nreturn [msg, null];",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 470,
-        "y": 1220,
+        "y": 1260,
         "wires": [
             [
-                "2ad1d4854d9a9f1c"
+                "2ad1d4854d9a9f1c",
+                "f66a1304044696f4"
             ],
             [
                 "1b95c465ee786478",
@@ -1213,7 +1186,7 @@
         "z": "a379f22ef37c9324",
         "name": "room/<ROOM_ID>/sensor/<SENSOR_ID>/measure",
         "topic": "",
-        "qos": "2",
+        "qos": "1",
         "retain": "false",
         "respTopic": "",
         "contentType": "",
@@ -1222,53 +1195,8 @@
         "expiry": "",
         "broker": "0f265edf35b211bf",
         "x": 1090,
-        "y": 1180,
+        "y": 1220,
         "wires": []
-    },
-    {
-        "id": "27b8b68f12b770cc",
-        "type": "ui_form",
-        "z": "a379f22ef37c9324",
-        "name": "",
-        "label": "Sensor to fake",
-        "group": "2545801375dbad2e",
-        "order": 1,
-        "width": "6",
-        "height": "4",
-        "options": [
-            {
-                "label": "Room",
-                "value": "room",
-                "type": "number",
-                "required": true,
-                "rows": null
-            },
-            {
-                "label": "Sensor",
-                "value": "sensor",
-                "type": "number",
-                "required": true,
-                "rows": null
-            }
-        ],
-        "formValue": {
-            "room": "",
-            "sensor": ""
-        },
-        "payload": "",
-        "submit": "Select",
-        "cancel": "",
-        "topic": "topic",
-        "topicType": "msg",
-        "splitLayout": "",
-        "className": "",
-        "x": 700,
-        "y": 1000,
-        "wires": [
-            [
-                "253c4071464e1d54"
-            ]
-        ]
     },
     {
         "id": "253c4071464e1d54",
@@ -1281,8 +1209,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1140,
-        "y": 1000,
+        "x": 1160,
+        "y": 980,
         "wires": [
             []
         ]
@@ -1292,7 +1220,7 @@
         "type": "ui_text",
         "z": "a379f22ef37c9324",
         "group": "2545801375dbad2e",
-        "order": 3,
+        "order": 5,
         "width": 0,
         "height": 0,
         "name": "Error message",
@@ -1301,7 +1229,7 @@
         "layout": "row-spread",
         "className": "",
         "x": 980,
-        "y": 1260,
+        "y": 1300,
         "wires": []
     },
     {
@@ -1324,7 +1252,7 @@
         "to": "",
         "reg": false,
         "x": 820,
-        "y": 1340,
+        "y": 1380,
         "wires": [
             [
                 "1b95c465ee786478"
@@ -1349,7 +1277,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 680,
-        "y": 1340,
+        "y": 1380,
         "wires": [
             [
                 "ef3c52d8bee091e4"
@@ -1393,7 +1321,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "timestamp",
+                "p": "payload.timestamp",
                 "pt": "msg",
                 "to": "",
                 "tot": "date"
@@ -1404,11 +1332,247 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 930,
-        "y": 1080,
+        "x": 940,
+        "y": 1120,
         "wires": [
             [
                 "21a638e9c63f7b79"
+            ]
+        ]
+    },
+    {
+        "id": "f66a1304044696f4",
+        "type": "debug",
+        "z": "a379f22ef37c9324",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "0e0ccb7be8ab3c8d",
+        "type": "ui_text_input",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Room",
+        "tooltip": "",
+        "group": "2545801375dbad2e",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "topic",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 270,
+        "y": 940,
+        "wires": [
+            [
+                "59bc358dbd666e0e"
+            ]
+        ]
+    },
+    {
+        "id": "44e1fb6d8d1b7e9b",
+        "type": "join",
+        "z": "a379f22ef37c9324",
+        "name": "Fake sensor",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 690,
+        "y": 980,
+        "wires": [
+            [
+                "253c4071464e1d54"
+            ]
+        ]
+    },
+    {
+        "id": "0f682ea00ca45586",
+        "type": "ui_text_input",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "label": "Sensor",
+        "tooltip": "",
+        "group": "2545801375dbad2e",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "topic",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 280,
+        "y": 1000,
+        "wires": [
+            [
+                "669396a7b7012d41"
+            ]
+        ]
+    },
+    {
+        "id": "59bc358dbd666e0e",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "room",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 940,
+        "wires": [
+            [
+                "44e1fb6d8d1b7e9b"
+            ]
+        ]
+    },
+    {
+        "id": "669396a7b7012d41",
+        "type": "change",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "sensor",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 1000,
+        "wires": [
+            [
+                "44e1fb6d8d1b7e9b"
+            ]
+        ]
+    },
+    {
+        "id": "ae665d805187d306",
+        "type": "inject",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 170,
+        "y": 940,
+        "wires": [
+            [
+                "0e0ccb7be8ab3c8d"
+            ]
+        ]
+    },
+    {
+        "id": "e4f397b33f46c6aa",
+        "type": "inject",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "",
+        "payload": "2",
+        "payloadType": "num",
+        "x": 170,
+        "y": 1000,
+        "wires": [
+            [
+                "0f682ea00ca45586"
+            ]
+        ]
+    },
+    {
+        "id": "20b8b9ea1bc1f4bb",
+        "type": "ui_button",
+        "z": "a379f22ef37c9324",
+        "name": "",
+        "group": "2545801375dbad2e",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Send",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 270,
+        "y": 1260,
+        "wires": [
+            [
+                "0a599d5f2b260d6a"
             ]
         ]
     }
